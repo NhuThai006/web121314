@@ -31,6 +31,12 @@
             </svg>
             <h1>SQL Gateway</h1>
         </div>
+        <nav class="app-nav">
+            <a href="index.jsp" class="active">SQL Gateway</a>
+            <a href="email">Email</a>
+            <a href="login">Login</a>
+            <a href="register">Register</a>
+        </nav>
         <span class="badge">PostgreSQL</span>
     </header>
 

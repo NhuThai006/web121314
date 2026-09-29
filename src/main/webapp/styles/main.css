@@ -51,6 +51,25 @@ body {
     border-radius: 4px;
 }
 
+.app-nav {
+    display: flex;
+    gap: 12px;
+    margin-left: auto;
+    margin-right: 12px;
+}
+
+.app-nav a {
+    font-size: 13px;
+    color: #007B88;
+    text-decoration: none;
+}
+
+.app-nav a:hover,
+.app-nav a.active {
+    text-decoration: underline;
+    font-weight: bold;
+}
+
 /* ===========================
    Main Content
    =========================== */
@@ -85,6 +104,12 @@ body {
     font-size: 14px;
     margin-bottom: 15px;
     margin-top: 0;
+}
+
+.help-hint {
+    color: #555;
+    font-size: 13px;
+    margin-top: -8px;
 }
 
 /* ===========================
@@ -224,4 +249,72 @@ textarea {
 .app-footer p {
     font-size: 12px;
     color: #666;
+}
+
+/* ===========================
+   Email Form
+   =========================== */
+
+.email-form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-width: 500px;
+}
+
+.form-row {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.form-row label {
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.form-row input[type="text"],
+.form-row input[type="email"] {
+    box-sizing: border-box;
+    width: 100%;
+    border: 1px solid #000;
+    padding: 5px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 13px;
+}
+
+.mail-message {
+    font-size: 14px;
+    color: #007B88;
+    font-weight: bold;
+    margin: 0 0 10px 0;
+}
+
+.contact-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 13px;
+}
+
+.contact-list li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.btn-pick {
+    padding: 2px 8px;
+    font-size: 12px;
+}
+
+.user-card {
+    margin: 0;
+    padding: 8px 10px;
+    border: 1px solid #007B88;
+    background-color: #e0f4f4;
+    font-size: 13px;
+    line-height: 1.4;
 }
