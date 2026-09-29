@@ -13,23 +13,23 @@ public class SQLGatewayDAO {
             return "<p>Error: Unable to connect to the database.</p>";
         }
 
-        Statement statement = null;
+        PreparedStatement ps = null;
         ResultSet resultSet = null;
 
         try {
-            statement = connection.createStatement();
             sqlStatement = sqlStatement.trim();
+            ps = connection.prepareStatement(sqlStatement);
 
             if (sqlStatement.length() >= 6) {
                 String sqlType = sqlStatement.substring(0, 6);
 
                 if (sqlType.equalsIgnoreCase("select")) {
                     // SELECT query - return result as HTML table
-                    resultSet = statement.executeQuery(sqlStatement);
+                    resultSet = ps.executeQuery();
                     sqlResult = SQLUtil.getHtmlTable(resultSet);
                 } else {
                     // INSERT, UPDATE, DELETE, or DDL statement
-                    int i = statement.executeUpdate(sqlStatement);
+                    int i = ps.executeUpdate();
                     if (i == 0) {
                         // DDL statement (CREATE, DROP, ALTER, etc.)
                         sqlResult = "<p>The statement executed successfully.</p>";
@@ -48,8 +48,8 @@ public class SQLGatewayDAO {
                 if (resultSet != null) {
                     resultSet.close();
                 }
-                if (statement != null) {
-                    statement.close();
+                if (ps != null) {
+                    ps.close();
                 }
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
