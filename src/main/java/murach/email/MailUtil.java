@@ -26,6 +26,14 @@ public class MailUtil {
     private static final String BREVO_API_KEY = "YOUR_BREVO_API_KEY_HERE";
     private static final String BREVO_API_URL = "https://api.brevo.com/v3/smtp/email";
 
+    private static String getBrevoApiKey() {
+        String envKey = System.getenv("BREVO_API_KEY");
+        if (envKey != null && !envKey.trim().isEmpty()) {
+            return envKey;
+        }
+        return BREVO_API_KEY;
+    }
+
     public static void sendMail(String replyTo, String to, String cc, String bcc,
             String subject, String body) throws MessagingException {
 
@@ -89,7 +97,7 @@ public class MailUtil {
             java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setRequestProperty("accept", "application/json");
-            conn.setRequestProperty("api-key", BREVO_API_KEY);
+            conn.setRequestProperty("api-key", getBrevoApiKey());
             conn.setRequestProperty("content-type", "application/json");
             conn.setDoOutput(true);
 
