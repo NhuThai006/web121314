@@ -53,11 +53,8 @@ public class RegisterServlet extends HttpServlet {
                         "Đã gửi mã OTP tới " + pending.getEmail()
                                 + ". Vui lòng kiểm tra email và nhập OTP.");
             } else {
-                // SMTP localhost thường chưa chạy → vẫn cho nhập OTP (hiện mã để test)
                 session.setAttribute("otpMessage",
-                        "Không gửi được email (" + mailStatus
-                                + "). Dùng mã OTP tạm thời bên dưới để xác nhận.");
-                session.setAttribute("showOtpFallback", true);
+                        "Lỗi gửi email: " + mailStatus);
             }
 
             response.sendRedirect("verify-otp");

@@ -40,12 +40,7 @@
                 <p class="mail-message">${message}</p>
             </c:if>
 
-            <c:if test="${otpFallback != null}">
-                <p class="user-card">
-                    SMTP localhost chưa chạy nên không gửi được mail.<br>
-                    Mã OTP để test: <strong>${otpFallback}</strong>
-                </p>
-            </c:if>
+
 
             <form action="verify-otp" method="post" class="email-form">
                 <div class="form-row">

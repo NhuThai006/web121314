@@ -105,10 +105,7 @@ public class VerifyOtpServlet extends HttpServlet {
                 (PendingRegistration) session.getAttribute("pendingRegistration");
         request.setAttribute("pendingEmail", pending.getEmail());
 
-        Boolean showFallback = (Boolean) session.getAttribute("showOtpFallback");
-        if (Boolean.TRUE.equals(showFallback)) {
-            request.setAttribute("otpFallback", pending.getOtp());
-        }
+
 
         getServletContext()
                 .getRequestDispatcher("/verify-otp.jsp")

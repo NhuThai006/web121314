@@ -13,9 +13,8 @@ public class MailUtil {
     private static final String SMTP_HOST = "smtp.gmail.com";
     private static final String SMTP_PORT = "587";
 
-    // Gmail đã "đăng nhập" để hệ thống gửi mail (như bài Email List)
-    private static final String SMTP_USER = "nuta006.st@gmail.com";
-    // Tạo tại: Google Account → Security → 2-Step Verification → App passwords
+    // Email gửi đi phải là email đã xác thực trên Brevo
+    private static final String SMTP_USER = "duongduyvinh206@gmail.com";
     // KHÔNG commit mật khẩu lên GitHub — điền App Password local khi chạy
     private static final String SMTP_PASS = "";
 
@@ -23,9 +22,15 @@ public class MailUtil {
         return SMTP_USER;
     }
 
+    // Thay thế bằng Brevo API Key cho hosting trên render.com
+    private static final String BREVO_API_KEY = "YOUR_BREVO_API_KEY_HERE";
+    private static final String BREVO_API_URL = "https://api.brevo.com/v3/smtp/email";
+
     public static void sendMail(String replyTo, String to, String cc, String bcc,
             String subject, String body) throws MessagingException {
 
+        // --- GIỮ LẠI CODE SMTP CŨ NHƯNG KHÔNG SỬ DỤNG ---
+        /*
         if (SMTP_PASS == null || SMTP_PASS.trim().isEmpty()
                 || "REPLACE_WITH_GMAIL_APP_PASSWORD".equals(SMTP_PASS)) {
             throw new MessagingException(
@@ -74,6 +79,91 @@ public class MailUtil {
 
         // 4 - send the message
         Transport.send(message);
+        */
+
+        // --- SỬ DỤNG BREVO API ---
+        try {
+            String jsonPayload = buildBrevoJsonPayload(replyTo, to, cc, bcc, subject, body);
+
+            java.net.URL url = new java.net.URL(BREVO_API_URL);
+            java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("accept", "application/json");
+            conn.setRequestProperty("api-key", BREVO_API_KEY);
+            conn.setRequestProperty("content-type", "application/json");
+            conn.setDoOutput(true);
+
+            try (java.io.OutputStream os = conn.getOutputStream()) {
+                byte[] input = jsonPayload.getBytes("utf-8");
+                os.write(input, 0, input.length);
+            }
+
+            int responseCode = conn.getResponseCode();
+            if (responseCode < 200 || responseCode >= 300) {
+                String errorResponse = "";
+                java.io.InputStream errorStream = conn.getErrorStream();
+                if (errorStream != null) {
+                    try (java.util.Scanner scanner = new java.util.Scanner(errorStream, "utf-8")) {
+                        errorResponse = scanner.useDelimiter("\\A").hasNext() ? scanner.next() : "";
+                    }
+                }
+                throw new MessagingException("Failed to send email via Brevo API. HTTP code: " + responseCode + " - " + errorResponse);
+            }
+        } catch (Exception e) {
+            if (e instanceof MessagingException) {
+                throw (MessagingException) e;
+            }
+            throw new MessagingException("Error sending email via Brevo API: " + e.getMessage(), e);
+        }
+    }
+
+    private static String buildBrevoJsonPayload(String replyTo, String to, String cc, String bcc, String subject, String body) {
+        String escapedSubject = subject.replace("\"", "\\\"").replace("\n", "\\n").replace("\r", "");
+        String escapedBody = body.replace("\"", "\\\"").replace("\n", "\\n").replace("\r", "");
+        
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        sb.append("\"sender\":{\"email\":\"").append(SMTP_USER).append("\",\"name\":\"SQL Gateway System\"},");
+        
+        if (to != null && !to.trim().isEmpty()) {
+            sb.append("\"to\":[");
+            String[] toArray = to.split(",");
+            for (int i = 0; i < toArray.length; i++) {
+                sb.append("{\"email\":\"").append(toArray[i].trim()).append("\"}");
+                if (i < toArray.length - 1) sb.append(",");
+            }
+            sb.append("],");
+        }
+
+        if (cc != null && !cc.trim().isEmpty()) {
+            sb.append("\"cc\":[");
+            String[] ccArray = cc.split(",");
+            for (int i = 0; i < ccArray.length; i++) {
+                sb.append("{\"email\":\"").append(ccArray[i].trim()).append("\"}");
+                if (i < ccArray.length - 1) sb.append(",");
+            }
+            sb.append("],");
+        }
+
+        if (bcc != null && !bcc.trim().isEmpty()) {
+            sb.append("\"bcc\":[");
+            String[] bccArray = bcc.split(",");
+            for (int i = 0; i < bccArray.length; i++) {
+                sb.append("{\"email\":\"").append(bccArray[i].trim()).append("\"}");
+                if (i < bccArray.length - 1) sb.append(",");
+            }
+            sb.append("],");
+        }
+        
+        if (replyTo != null && !replyTo.trim().isEmpty() && !replyTo.trim().equalsIgnoreCase(SMTP_USER)) {
+            sb.append("\"replyTo\":{\"email\":\"").append(replyTo.trim()).append("\"},");
+        }
+
+        sb.append("\"subject\":\"").append(escapedSubject).append("\",");
+        sb.append("\"textContent\":\"").append(escapedBody).append("\"");
+        sb.append("}");
+
+        return sb.toString();
     }
 
     /** Welcome mail kiểu Murach Email List */
