@@ -10,8 +10,8 @@ FROM tomcat:9.0-jre11
 # Xóa các ứng dụng mặc định của Tomcat để tránh đụng độ (tùy chọn)
 RUN rm -rf /usr/local/tomcat/webapps/ROOT
 
-# Copy file war từ bước build sang thư mục webapps của Tomcat
-COPY --from=build /app/target/ch12_sqlgateway.war /usr/local/tomcat/webapps/ch12_sqlgateway.war
+# Copy file war từ bước build sang thư mục webapps của Tomcat và đổi tên thành ROOT.war để chạy ở trang chủ
+COPY --from=build /app/target/ch12_sqlgateway.war /usr/local/tomcat/webapps/ROOT.war
 
 # Port mặc định của Tomcat
 EXPOSE 8080
